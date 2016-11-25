@@ -6,8 +6,10 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
-mongoose.connect('mongodb://node:node@novus.modulusmongo.net:27017/Iganiq8o'); // connect to our database
-var Bear     = require('./app/models/bear');
+// mongoose.connect('mongodb://testuser:Druva@04@ds161245.mlab.com:61245/test_db'); // connect to our database on mongolab
+mongoose.connect('mongodb://127.0.0.1:27017/flashCards'); // connect to our local database
+var Card     = require('./app/models/card');
+var Deck     = require('./app/models/deck');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -37,23 +39,22 @@ router.get('/', function(req, res) {
 
 // on routes that end in /bears
 // ----------------------------------------------------
-router.route('/bears')
+router.route('/decks')
 
-    // create a bear (accessed at POST http://localhost:8080/api/bears)
-    .post(function(req, res) {
+  .get(function(req, res) {
+    console.log("teste do get")
+    Deck.find(function (err, decks){
+      if(err) {
+        res.send(err) //nao aparece no browser
+        console.log(err)
+      }
+      res.json(decks); //aparece no browser
+    })
+  })
 
-        var bear = new Bear();      // create a new instance of the Bear model
-        bear.name = req.body.name;  // set the bears name (comes from the request)
 
-        // save the bear and check for errors
-        bear.save(function(err) {
-            if (err)
-                res.send(err);
 
-            res.json({ message: 'Bear created!' });
-        });
 
-    });
 
 
 // REGISTER OUR ROUTES -------------------------------
@@ -63,4 +64,7 @@ app.use('/api', router);
 // START THE SERVER
 // =============================================================================
 app.listen(port);
+
+
 console.log('Magic happens on port ' + port);
+
